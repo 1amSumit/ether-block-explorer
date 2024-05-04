@@ -74,7 +74,7 @@ const LandingPage = () => {
     <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-purple-600 to-indigo-600">
       <div className="bg-white rounded-lg p-8 max-w-lg w-full">
         <h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-          EtherScan
+          EtherView
         </h1>
         <div className="flex">
           <input
