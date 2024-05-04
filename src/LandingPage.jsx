@@ -26,6 +26,7 @@ const LandingPage = () => {
     async function getTsx() {
       const x = await alchemy.core.getBlockWithTransactions(blockNumber);
       setTsx(x);
+
       setIsLoading(false);
       console.log(tsx.timestamp);
     }

@@ -1,43 +1,72 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Alchemy, Network } from "alchemy-sdk";
 
-/* eslint-disable react/prop-types */
+const settings = {
+  apiKey: import.meta.env.VITE_APP_ALCHEMY_API_KEY,
+  network: Network.ETH_MAINNET,
+};
+const alchemy = new Alchemy(settings);
+
 const DetailsPage = () => {
-  const blockId = useParams().id;
-  console.log(blockId);
+  const blockId = useParams().id.toString();
 
-  const blockDetails = {
-    id: blockId,
-    name: "Cool Block",
-    description: "A cool-looking block with all the details displayed.",
-    imageUrl: "https://placeimg.com/400/400/tech", // Example image URL
-    otherDetails: "More information about the block.",
-  };
+  const [tsx, setTsx] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const getTsx = async () => {
+      const transaction = await alchemy.core.getBlockWithTransactions(+blockId);
+      setTsx(transaction);
+      setIsLoading(false);
+    };
+
+    getTsx();
+  }, [blockId]);
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  console.log(tsx);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-          <div className="px-6 py-8 sm:px-10 bg-gradient-to-r from-indigo-600 to-purple-600">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-semibold text-white">
-                {blockDetails.name}
-              </h2>
-              <img
-                src={blockDetails.imageUrl || placeholderImage}
-                alt={blockDetails.name}
-                className="w-16 h-16 rounded-full"
-              />
-            </div>
-            <p className="mt-4 text-lg text-gray-200">
-              {blockDetails.description}
-            </p>
-          </div>
-          <div className="px-6 py-6 sm:px-10 bg-white">
-            <h3 className="text-xl font-semibold text-gray-800 mb-2">
-              Other Details
-            </h3>
-            <p className="text-gray-600">{blockDetails.otherDetails}</p>
-          </div>
+    <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-purple-600 to-indigo-600">
+      <div className="container mx-auto p-8 bg-white shadow-md rounded-lg">
+        <h1 className="text-3xl font-bold mb-4">{`Block #${tsx.number} Details`}</h1>
+        <div className="mb-4">
+          <strong>Block Number:</strong> {tsx.number}
+        </div>
+        <div className="mb-4">
+          <strong>Block Hash:</strong> {tsx.hash}
+        </div>
+        <div className="mb-4">
+          <strong>Timestamp:</strong>{" "}
+          {new Date(tsx.timestamp * 1000).toLocaleString()}
+        </div>
+        <div className="mb-4">
+          <strong>Transactions:</strong> {tsx.transactions.length}
+        </div>
+        <div className="mb-4">
+          <strong>Miner:</strong> {tsx.miner}
+        </div>
+        <div className="mb-4">
+          <strong>Gas Used:</strong> {parseInt(tsx.gasUsed._hex, 16)}
+        </div>
+        <div className="mb-4">
+          <strong>Difficulty:</strong> {parseInt(tsx.difficulty._hex, 16)}
+        </div>
+        <div className="mb-4">
+          <strong>Block Size:</strong> {tsx.size} bytes
+        </div>
+        <div className="mb-4">
+          <strong>Gas Limit:</strong> {parseInt(tsx.gasLimit._hex, 16)}
+        </div>
+        <div className="mb-4">
+          <strong>Parent Hash:</strong> {tsx.parentHash}
+        </div>
+        <div className="mb-4">
+          <strong>Nonce:</strong> {parseInt(tsx.nonce, 16)}
         </div>
       </div>
     </div>
